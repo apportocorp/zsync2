@@ -44,6 +44,14 @@ function(add_libzsync2 NAME BUILD_TYPE)
     if(LIBSOCKET_FOUND)
         target_compile_definitions("${NAME}" PRIVATE HAVE_LIBSOCKET=1)
     endif()
+
+    # largefile support à la gpgme
+    # libzsync uses off_t everywhere, this allows us to support files larger than 2GiB
+    # our public APIs do not use off_t but long long to avoid this ambiguity
+    target_compile_definitions("${NAME}"
+        PRIVATE -D_FILE_OFFSET_BITS=64
+        PRIVATE -DLARGEFILE_SOURCE
+    )
 endfunction()
 
 add_libzsync2(libzsync2 SHARED)
